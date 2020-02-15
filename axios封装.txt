@@ -1,0 +1,95 @@
+network文件夹
+在vue组件内直接使用步骤：
+第一步引入：
+import {request} from "@/assets/js/network/request";
+import qs from 'qs'
+
+Vue.prototype.$axios = request
+Vue.prototype.$qs = qs
+
+第二步使用：
+let data = {
+        id: 1,
+        token: 'This is token'
+      }
+      this.$axios({
+        url: 'webmark/query',
+        method: 'POST',
+        data: this.$qs.stringify(data),
+        /* 发送请求拦截回调函数 */
+        request: function (config) {
+          console.log(config)
+        },
+        requesterror: function (error) {
+          console.log(error)
+        },
+        /* 请求响应拦截回调函数 */
+        response: function (response) {
+          console.log(response)
+        },
+        responseerror: function (err) {
+          console.log(err)
+        }
+      })
+      .then(res => {
+        console.log(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+
+参数：
+url: '' 访问路径，在axios实例中已经创建了baseURL（公共路径），所以只用填写子路径就好
+method: 设置请求方式get、post
+data: {}  当请method为post的时候使用data进行参数传递
+params: {} 当method为get时候使用params进行参数传递
+request: 自己封装的函数，用于发送请求拦截回调函数处理
+response：自己封装的函数，请求响应拦截回调函数 
+      
+
+在开发的时候对于ajax请求进行二次封装，每个组件对应一个单独的js文件进行ajax处理
+在单独的js中使用：
+import {request} from './request'
+import $qs from 'qs'
+
+export function getHomeData(homeData) {
+  return request({
+    url: 'webmark/query',
+    method: 'POST',
+    data: $qs.stringify(homeData),
+    /* 发送请求拦截回调函数 */
+    request: function (config) {
+      console.log(config)
+    },
+    requesterror: function (error) {
+      console.log(error)
+    },
+    /* 请求响应拦截回调函数 */
+    response: function (response) {
+      console.log(response)
+    },
+    responseerror: function (err) {
+      console.log(err)
+    }
+  })
+}
+
+vue中调用：
+let data = {
+      id: 1,
+      token: 'This is token'
+    }
+    getHomeData(data)
+    .then(res => {
+      console.log(res)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+
+参数通过Vue页面传入，请求回来的信息在Vue页面处理
+js文件统一处理请求发送接口，拦截器
+
+
+
+
